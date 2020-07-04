@@ -1,0 +1,13 @@
+<html>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+   <body>
+     <h1> Graph Time!</h1>
+     <p> Links </p>
+     <ul>
+     <li><a href='/divTest'>Div Test</a></li>
+     <li><a href="{{url_for('login_page')}}">Login</a></li>
+     <li><a href="{{url_for('hello_world')}}">Home</a></li>
+	 </ul>
+	 {{pltDiv|safe}}
+   </body>
+</html>
