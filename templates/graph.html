@@ -8,6 +8,12 @@
      <li><a href="{{url_for('login_page')}}">Login</a></li>
      <li><a href="{{url_for('hello_world')}}">Home</a></li>
 	 </ul>
+
+   <div id='graphs'>
 	 {{pltDiv|safe}}
+  </div>
+  <div id='secondGraph'>
+    {{mapDiv|safe}}
+  </div>
    </body>
 </html>

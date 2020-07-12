@@ -3,7 +3,7 @@ Python with Flask web app portfolio practice
 this is a test site using python 2.7 and flask
 
 DEPENDENCIES
-flask installed via venv
+flask installed via venv "pip install flask"
 pandas installed via venv
 plotly installed via venv
 pip install google-cloud-bigquery via venv
@@ -15,9 +15,9 @@ navigate to this directory and use command
 
 % source bin/activate
 
-hello.py is the main python file. To run on local server nagivate to this directory and use command
+flask_app.py is the main python file. To run on local server nagivate to this directory and use command
 
-% python hello.py
+% python flask_app.py
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 
 now type the http address into web browser to test

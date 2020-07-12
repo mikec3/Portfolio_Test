@@ -60,25 +60,30 @@ def graph():
 	plt_div = plot(fig, include_plotlyjs=False, output_type='div')
 	return render_template('/graph.html', pltDiv = plt_div)
 
-#get data from google-cloud-bigquery and graph it
+# get data from google-cloud-bigquery and graph it
+# All US states on a line graph
 @app.route('/cloudGraph')
 def cloudGraph():
+
+	# Google BigQuery Query
 	query = """
 		SELECT * FROM bigquery-public-data.covid19_usafacts.confirmed_cases
-		WHERE state='WA'
 		"""
 	query_job = client.query(query)  # call query to bigquery
 	casesdf = query_job.to_dataframe() # convert results into dataframe
 
-	casesDf_transp=casesdf.T   # transpose df to get dates in rows instead of columns
-	casesDf_transp.columns = casesDf_transp.loc['county_name']  # set county names as column names
-	casesDf_cleaned = casesDf_transp.drop(['county_name', 'state', 'county_fips_code', 'state_fips_code']) # drop rows by name
+	#Group the county level into states, sum all counties, then transpose so dates are index
+	state_levelDf = casesdf.groupby(['state']).sum().T
+
+	#Use state level df to create a total column, will be used for line graph of all states
+	state_levelDf['Total'] = state_levelDf.sum(axis=1)
+
 	
 	# Chop off the first character of the index, then replace all underscores with slashes, then convert to date
 	# and assign the date back to the index.
-	casesDf_cleaned.index = pd.to_datetime(casesDf_cleaned.index.str[1:].str.replace('_','/'))
-	Xaxis = casesDf_cleaned.index	#set x axis to df index (dates)
-	Yaxis = casesDf_cleaned['King County'] # set y axis to values in king county column
+	state_levelDf.index = pd.to_datetime(state_levelDf.index.str[1:].str.replace('_','/'))
+	Xaxis = state_levelDf.index	#set x axis to df index (dates)
+	Yaxis = state_levelDf['Total'] # set y axis to values in king county column
 
 	fig=go.Figure(data=go.Scatter(x=Xaxis, y=Yaxis))		# create plotly graph object
 	#fig.update_layout(title='King County Covid Cases', xaxis_title = "Date", yaxis_title="Positive Case Count")
@@ -94,7 +99,7 @@ def cloudGraph():
 		x=1,
 		y=-.4
 		)],
-	title = 'King County Covid Cases',
+	title = 'Total US COVID cases',
 	xaxis_title='Date',
 	yaxis_title='Positive Case Count',
     xaxis=dict(
@@ -122,11 +127,37 @@ def cloudGraph():
     	)
 	)
 
-	plt_div = plot(fig, include_plotlyjs=False, output_type = 'div')    # output graph object as plotly div, must have link in html to plotlyjs
+	line_graph_div = plot(fig, include_plotlyjs=False, output_type = 'div')    # output graph object as plotly div, must have link in html to plotlyjs
 
+	# Create mapDiv - a choropleth of the states cumulative total
+	# Keep only columns and last row (running total)
+	state_levelDf = casesdf.groupby(['state']).sum().T
+	state_levelDf_total = state_levelDf.iloc[[-1]]
+
+	#Transpose back to states and total in rows
+	statesDf = state_levelDf_total.T
+
+	#Rename total column
+	statesDf.columns = ['Total']
+
+	#Get the date of the last record and convert to date appearance
+	lastUpdated = list(casesdf.columns)[-1][1:].replace('_','/')
+
+	mapFig = go.Figure(data=go.Choropleth(
+		locations=statesDf.index,
+		z=statesDf['Total'],
+		locationmode='USA-states',
+		colorscale='Reds',
+		colorbar_title='Positive Cases'
+	))
+	mapFig.update_layout(
+		title_text = 'Total Positive COVID cases per state as of {}'.format(lastUpdated),
+		geo_scope='north america',
+		)
+	mapDiv = plot(mapFig, include_plotlyjs=False, output_type='div')
 
 	print('this shows up in the terminal where the server is started!!')
-	return render_template('/graph.html', pltDiv=plt_div)    # render /graph.html with graph as plt_div
+	return render_template('/graph.html', pltDiv=line_graph_div, mapDiv=mapDiv)    # render /graph.html with graph as plt_div
 
 
 # DONT NEED TO ADD THIS TO WEB SERVER---------
