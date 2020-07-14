@@ -1,0 +1,167 @@
+/* Basic styling */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  /*background: #222;*/
+}
+body {
+  font-family: sans-serif;
+  font-size: 16px;
+}
+nav {
+  /*background: #EEEEEE;*/
+  padding: 0 15px;
+}
+a {
+  color: black;
+  text-decoration: none;
+}
+
+.menu {
+  list-style-type: none;
+}
+.logo {
+  font-size: 20px;
+  padding: 7.5px 10px 7.5px 0;
+}
+.item {
+  padding: 10px;
+}
+
+.item.button {
+  padding: 9px 5px;
+  color: white;
+
+}
+
+.item:not(.button) a:hover,
+.item a:hover::after {
+  color: #ccc;
+}
+
+/* Mobile menu */
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.menu li a {
+  display: block;
+  padding: 15px 5px;
+}
+.menu li.subitem a {
+  padding: 15px;
+}
+.toggle {
+  order: 1;
+  font-size: 20px;
+}
+.item.button {
+  order: 2;
+}
+.item {
+  order: 3;
+  width: 100%;
+  text-align: center;
+  display: none;
+}
+
+
+/* Tablet menu */
+@media all and (min-width: 700px) {
+  .menu {
+    justify-content: center;
+  }
+  .logo {
+    flex: 1;
+  }
+  .item.button {
+    width: auto;
+    order: 1;
+    display: block;
+  }
+
+
+/* Button up from tablet screen */
+  .menu li.button a {
+    padding: 10px 15px;
+    margin: 5px 0;
+  }
+  .button a {
+    color: white;
+    background: black;
+    border: 1px black solid;
+  }
+
+  .button a:hover {
+    text-decoration: none;
+    color: black;
+  }
+  .button:not(.secondary) a:hover {
+    background: white;
+    border-color: black;
+  }
+
+}
+/* Desktop menu */
+@media all and (min-width: 960px) {
+  .menu {
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    background: none;
+  }
+  .logo {
+    order: 0;
+  }
+  .item {
+    order: 1;
+    position: relative;
+    display: block;
+    width: auto;
+  }
+  .button {
+    order: 2;
+  }
+
+}
+
+/* PROJECT CONTAINER */
+.project.container{
+  /*border: 1px solid green;*/
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+}
+.link.list{
+  /*border: 1px solid red;*/
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  list-style-type: none;
+  align-content: left;
+  justify-content: center;
+}
+.project.link{
+  border: .05em solid #DEDEDE;
+  margin: 3em 3em;
+  max-width:25%;
+}
+.project.link img{
+ max-width: 100%;
+ /*max-height: 100%;*/
+}
+.project.link p{
+  padding: 1em;
+}
+
+.linkBox{
+  display: flex;
+}
+
+#desc{
+  margin:6em 3em;
+}

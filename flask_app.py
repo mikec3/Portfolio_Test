@@ -19,8 +19,8 @@ app = Flask(__name__)
 # Main page. index.html must be in templates folder
 @app.route('/')
 def hello_world():
-	randVar = random()   # create random number, just for funsies
-   	return render_template('/index.html', name=randVar) # returns index.html and sets name on html page
+
+   	return render_template('/index.html') # returns index.html
 
 # test post in url
 @app.route('/hello/<name>')
