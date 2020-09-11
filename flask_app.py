@@ -28,13 +28,6 @@ def hello_name(name):
 	namely = name +"yoouuu!!!!"
 	return '<h1> Hello %s!</h1>' % namely
 
-# test returning multiple html as a variable
-@app.route('/divTest')
-def divTest():
-	div = '<div> <h1> YOU!! </h1> <p> me! </p> </div>'
-	return div
-
-
 # Login testing - go to /login.html in browser
 @app.route('/success/<name>')
 def success(name):
@@ -97,9 +90,9 @@ def cloudGraph():
 		xref='paper',
 		yref='paper',
 		x=1,
-		y=-.4
+		y=-.45
 		)],
-	title = 'Total US COVID cases',
+	# title = 'Total US COVID cases',
 	xaxis_title='Date',
 	yaxis_title='Positive Case Count',
     xaxis=dict(
@@ -148,11 +141,19 @@ def cloudGraph():
 		z=statesDf['Total'],
 		locationmode='USA-states',
 		colorscale='Reds',
-		colorbar_title='Positive Cases'
+		colorbar_title='Positive Cases',
+		# text="yooo",    # Hover Text
 	))
 	mapFig.update_layout(
-		title_text = 'Total Positive COVID cases per state as of {}'.format(lastUpdated),
-		geo_scope='north america',
+		title={
+		'text':'Total Positive COVID cases per state as of {}'.format(lastUpdated),
+		# 'pad': dict(t=-300,b=-200),
+		# 'yanchor':'top',
+		},
+		# margin= dict(t=200,r=200),
+		# title_text = 'Total Positive COVID cases per state as of {}'.format(lastUpdated),
+		geo_scope='usa',
+
 		)
 	mapDiv = plot(mapFig, include_plotlyjs=False, output_type='div')
 

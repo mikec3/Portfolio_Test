@@ -13,7 +13,7 @@ TO START
 
 navigate to this directory and use command
 
-% source bin/activate
+% source bin/activate         // activates virtual environment
 
 flask_app.py is the main python file. To run on local server nagivate to this directory and use command
 

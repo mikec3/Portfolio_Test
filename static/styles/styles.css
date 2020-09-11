@@ -127,6 +127,19 @@ a {
 
 }
 
+/* Banner description */
+
+.banner.container{
+  border-bottom: 1px solid black;
+  margin: auto;
+  max-width:80%;
+  text-align: center;
+}
+
+.banner.container p{
+  padding: 1em 4em 1em;
+}
+
 /* PROJECT CONTAINER */
 .project.container{
   /*border: 1px solid green;*/

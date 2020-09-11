@@ -1,19 +1,16 @@
 <html>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/graphStyle.css') }}">
    <body>
-     <h1> Graph Time!</h1>
-     <p> Links </p>
-     <ul>
-     <li><a href='/divTest'>Div Test</a></li>
-     <li><a href="{{url_for('login_page')}}">Login</a></li>
-     <li><a href="{{url_for('hello_world')}}">Home</a></li>
-	 </ul>
-
-   <div id='graphs'>
-	 {{pltDiv|safe}}
-  </div>
-  <div id='secondGraph'>
+    <h1> US COVID Dashboard </h1>
+   <div id="dashboard">
+    <div class="graphs">
     {{mapDiv|safe}}
+  </div>
+  <div class="graphs">
+	  {{pltDiv|safe}}
+  </div>
+
   </div>
    </body>
 </html>
