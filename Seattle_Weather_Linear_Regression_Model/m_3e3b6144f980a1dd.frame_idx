@@ -1,0 +1,21 @@
+[sframe]
+version=0
+num_segments=0
+num_columns=7
+nrows=1
+[column_names]
+0000=Iteration
+0001=Passes
+0002=Elapsed Time
+0003=Training-max_error
+0004=Validation-max_error
+0005=Training-rmse
+0006=Validation-rmse
+[column_files]
+0000=m_3e3b6144f980a1dd.sidx:0
+0001=m_3e3b6144f980a1dd.sidx:1
+0002=m_3e3b6144f980a1dd.sidx:2
+0003=m_3e3b6144f980a1dd.sidx:3
+0004=m_3e3b6144f980a1dd.sidx:4
+0005=m_3e3b6144f980a1dd.sidx:5
+0006=m_3e3b6144f980a1dd.sidx:6

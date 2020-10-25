@@ -5,6 +5,7 @@ import pandas as pd
 from random import random
 import plotly.graph_objects as go
 from plotly.offline import plot
+import graphlab
 
 
 # The below lines allow for file paths to be shared on localhost and pythonanywhere server __file__ is a python majic variable 
@@ -160,6 +161,37 @@ def cloudGraph():
 	print('this shows up in the terminal where the server is started!!')
 	return render_template('/graph.html', pltDiv=line_graph_div, mapDiv=mapDiv)    # render /graph.html with graph as plt_div
 
+# ---------------------- TESTING ----------------------------------------------------------------
+# ---------------------- TESTING ----------------------------------------------------------------
+@app.route('/Select_dates')
+def Select_dates():
+	return render_template('/Select_Dates.html')
+
+@app.route('/Predict_Seattle_Weather', methods=['POST', 'GET'])
+def Predict_Seattle_Weather():
+		if request.method == 'POST':
+			date=request.form['date']
+		else:
+			date=request.args.get('date')
+
+		# Load the linear regression model
+		weather_model = graphlab.load_model('Seattle_Weather_Linear_Regression_Model')
+
+		# Prepare the Input
+		input_string = date
+		inputdf = pd.DataFrame({"DATE":[input_string]})
+		inputdf['DATE'] = pd.to_datetime(inputdf['DATE'])
+		inputdf['YEAR'] = inputdf['DATE'].dt.year
+		inputdf['WEEK'] = inputdf['DATE'].dt.week.astype(str)
+
+		prediction = weather_model.predict(graphlab.SFrame(inputdf))
+
+		date = " The max temp On {} will be {}.".format(date, prediction)
+
+		return redirect(url_for('success', name=date))
+
+# ---------------------- END_TESTING ----------------------------------------------------------------
+# ---------------------- END_TESTING ----------------------------------------------------------------
 
 # DONT NEED TO ADD THIS TO WEB SERVER---------
 if __name__ == '__main__':
