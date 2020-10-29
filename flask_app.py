@@ -6,6 +6,7 @@ from random import random
 import plotly.graph_objects as go
 from plotly.offline import plot
 import graphlab
+from datetime import date, timedelta
 
 
 # The below lines allow for file paths to be shared on localhost and pythonanywhere server __file__ is a python majic variable 
@@ -21,7 +22,7 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
 
-   	return render_template('/index.html') # returns index.html
+	return render_template('/index.html') # returns index.html
 
 # test post in url
 @app.route('/hello/<name>')
@@ -96,29 +97,29 @@ def cloudGraph():
 	# title = 'Total US COVID cases',
 	xaxis_title='Date',
 	yaxis_title='Positive Case Count',
-    xaxis=dict(
-        rangeselector=dict(
-            buttons=list([
-                dict(count=1,
-                     label="1m",
-                     step="month",
-                     stepmode="backward"),
-                dict(count=1,
-                     label="YTD",
-                     step="year",
-                     stepmode="todate"),
-                dict(count=1,
-                     label="1y",
-                     step="year",
-                     stepmode="backward"),
-                dict(step="all")
-            ])
-        ),
-        rangeslider=dict(
-            visible=True
-        ),
-        type="date"
-    	)
+	xaxis=dict(
+		rangeselector=dict(
+			buttons=list([
+				dict(count=1,
+					 label="1m",
+					 step="month",
+					 stepmode="backward"),
+				dict(count=1,
+					 label="YTD",
+					 step="year",
+					 stepmode="todate"),
+				dict(count=1,
+					 label="1y",
+					 step="year",
+					 stepmode="backward"),
+				dict(step="all")
+			])
+		),
+		rangeslider=dict(
+			visible=True
+		),
+		type="date"
+		)
 	)
 
 	line_graph_div = plot(fig, include_plotlyjs=False, output_type = 'div')    # output graph object as plotly div, must have link in html to plotlyjs
@@ -174,21 +175,92 @@ def Predict_Seattle_Weather():
 		else:
 			date=request.args.get('date')
 
-		# Load the linear regression model
+		# Load the linear regression model, predicts TMAX for Seattle based on week of year and year.
 		weather_model = graphlab.load_model('Seattle_Weather_Linear_Regression_Model')
 
-		# Prepare the Input
+		# Prepare the Input, add week of year as a string (_coef) and year from the date column
 		input_string = date
 		inputdf = pd.DataFrame({"DATE":[input_string]})
 		inputdf['DATE'] = pd.to_datetime(inputdf['DATE'])
 		inputdf['YEAR'] = inputdf['DATE'].dt.year
 		inputdf['WEEK'] = inputdf['DATE'].dt.week.astype(str)
 
+		# Make the TMAX prediction on the date given
 		prediction = weather_model.predict(graphlab.SFrame(inputdf))
 
-		date = " The max temp On {} will be {}.".format(date, prediction)
+		#Store the success and results in a string for display
+		prediction_string = " The max temp On {} will be {}.".format(date, prediction)
 
-		return redirect(url_for('success', name=date))
+		#Make prediction plot--------------------------------------------------------
+		days_before_after = 120
+
+		#Initialize the inputdf with the requested date
+		inputdf = pd.DataFrame({"DATE":[input_string]})
+		inputdf['DATE'] = pd.to_datetime(inputdf['DATE'])
+
+		# Start the dataframe at n days before the input date
+		inputdf['DATE'] = (inputdf['DATE']-timedelta(days=days_before_after))
+
+		# Create a list of dates that are before and after the input date
+		for i in range(1,(days_before_after*2)):
+			new_day = (inputdf['DATE'].iloc[i-1]+timedelta(days=1))
+			inputdf = inputdf.append({'DATE':new_day}, ignore_index=True)
+		
+		# Create the Year and Week columns from the DATE column (Year and Week are model features)
+		inputdf['YEAR'] = inputdf['DATE'].dt.year
+		inputdf['WEEK'] = inputdf['DATE'].dt.week.astype(str)
+
+		# Build the prediction column for the whole dataframe of dates before and after requested date
+		inputdf['Predicted_TMAX'] = weather_model.predict(graphlab.SFrame(inputdf))
+
+		fig=go.Figure(data=go.Scatter(x=inputdf['DATE'], y=inputdf['Predicted_TMAX']))		# create plotly graph object
+
+		# Add range slider
+		fig.update_layout(
+
+		# Add data source citation at bottom right of graph
+		annotations = [dict(text='Training Data Source: https://www.kaggle.com/rtatman/did-it-rain-in-seattle-19482017',
+			showarrow=False,
+			xref='paper',
+			yref='paper',
+			x=1,
+			y=-.45
+			)],
+		# title = 'Total US COVID cases',
+		xaxis_title='Date',
+		yaxis_title='Predicted Max Temperature (F)',
+		title = "Predicting Seattle's Max Temperature On Any Given Date Using Linear Regression",
+		xaxis=dict(
+			rangeselector=dict(
+				buttons=list([
+					dict(count=2,
+						label="1m",
+						step="month",
+						stepmode="backward"),
+					dict(count=1,
+						label="1y",
+						step="year",
+						stepmode="backward"),
+					dict(step="all")
+				])
+			),
+			rangeslider=dict(
+				visible=True
+			),
+			type="date"
+			)
+		)
+	
+		fig.add_annotation(x=inputdf['DATE'].iloc[days_before_after], y=inputdf['Predicted_TMAX'].iloc[days_before_after],
+				text="Predicted Max Temp on {} is {}*F".format(input_string, int(inputdf['Predicted_TMAX'].iloc[days_before_after])),
+				showarrow=True,
+				arrowhead=5,
+				yshift=10)
+
+		weather_graph_div = plot(fig, include_plotlyjs=False, output_type='div')
+
+		# Redirect browser back to the select_dates page, use  thecreated plot to show the results------
+		return render_template('/Select_Dates.html', weather_prediction_graph_div=weather_graph_div)
 
 # ---------------------- END_TESTING ----------------------------------------------------------------
 # ---------------------- END_TESTING ----------------------------------------------------------------

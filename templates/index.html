@@ -18,32 +18,56 @@
      <ul class="link list">
 
       <div class="linkBox">
-       <li class="project link"><a href="{{url_for('cloudGraph')}}"><img src = "{{url_for('static',filename='/images/US_map.png')}}"><p>COVID US Dashboard</p></a></li>
-       <p id="desc"> Interactive and real-time visualizations of nationwide COVID case counts.
-       </br>
-        Data sourced from google bigquery and visualized with the plotly python library.
-       </p>
+       <li class="project link"><a href="{{url_for('cloudGraph')}}"><img src = "{{url_for('static',filename='/images/US_map.png')}}"></a></li>
+       <div id="desc">
+          <a href="{{url_for('cloudGraph')}}"><h3> US Covid Dashboard </h3> </a>
+          </br>
+          <p> Interactive and real-time visualizations of nationwide COVID case counts.
+          </br>
+          Data sourced from google bigquery and visualized with the plotly python library.
+          </p>
+        </div>
        </div>
 
        <div class="linkBox">
-       <li class="project link"><a href="https://play.google.com/store/apps/details?id=com.VirtualRnLLC.LearnPacing"><img src = "{{url_for('static',filename='/images/LearnPacing.png')}}"><p>Android Epicardial Pacing Trainer</p></a></li>
-       <p id="desc">
-        Medical device simulator that teaches clinicians how to operate an epicardial pacemaker.
+       <li class="project link"><a href="https://play.google.com/store/apps/details?id=com.VirtualRnLLC.LearnPacing"><img src = "{{url_for('static',filename='/images/LearnPacing.png')}}"></a></li>
+          <div id="desc">
+          <a href="https://play.google.com/store/apps/details?id=com.VirtualRnLLC.LearnPacing">
+            <h3> Android Epicardial Pacing Trainer</h3>
+          </a>
+          </br> 
+          <p>Medical device simulator that teaches clinicians how to operate an epicardial pacemaker.
+          </br>
+          Created using UNITY, scripted in C#, images made in GIMP.
+          </p>
+       </div>
+     </div>
+
+       <div class="linkBox">
+       <li class="project link"><a href="http://www.mysicu.com/games/EKGSimulator/"><img src = "{{url_for('static',filename='/images/EKGSim.png')}}"></a></li>
+       <div id="desc">
+        <a href="http://www.mysicu.com/games/EKGSimulator/">
+        <h3>EKG Simulator </h3>
+        </a>
       </br>
-        Created using UNITY, scripted in C#, images made in GIMP.
-       </p>
+        <p>Online learning game that teaches clinicians and students how to interprent EKG rhythms. 
+       </br>
+       Created using UNITY, scripted in C#, images made in GIMP. 
+        </p>
        </div>
-
-       <div class="linkBox">
-       <li class="project link"><a href="http://www.mysicu.com/games/EKGSimulator/"><img src = "{{url_for('static',filename='/images/EKGSim.png')}}"><p>EKG Simulator</p></a></li>
-       <p id="desc">Online learning game that teaches clinicians and students how to interprent EKG rhythms. </br>
-       Created using UNITY, scripted in C#, images made in GIMP. </p>
-       </div>
+     </div>
 
         <div class="linkBox">
-       <li class="project link"><a href="https://github.com/mikec3"><img src = "{{url_for('static',filename='/images/CodeShot.png')}}"><p>GitHub</p></a></li>
-       <p id="desc">My GitHub. </br> I make no claims that the content here is sensible or follows best practices, it's all hobby projects. </p>
+       <li class="project link"><a href="https://github.com/mikec3"><img src = "{{url_for('static',filename='/images/CodeShot.png')}}"></a></li>
+       <div id="desc">
+        <a href="https://github.com/mikec3"><h3>GitHub</h3></a>
+        </br>
+        <p>My GitHub. 
+        </br> 
+        I make no claims that the content here is sensible or follows best practices, it's all hobby projects. 
+      </p>
        </div>
+     </div>
      </ul>
    </div>
    </body>

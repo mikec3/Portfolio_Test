@@ -1,9 +1,18 @@
 <html>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
    <body>
       <form action = "http://127.0.0.1:5000/Predict_Seattle_Weather" method = "post">
          <p> Select Date: </p>
          <p><input type = "date" name = "date" /></p>
          <p><input type = "submit" value = "submit" /></p>
       </form>
+
+    <div id="dashboard">
+    	<div class="graphs">
+    		{{weather_prediction_graph_div|safe}}
+  		</div>
+  	</div>
+
+
    </body>
 </html>
