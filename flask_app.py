@@ -57,8 +57,8 @@ def graph():
 
 # get data from google-cloud-bigquery and graph it
 # All US states on a line graph
-@app.route('/cloudGraph')
-def cloudGraph():
+@app.route('/US_COVID_DASHBOARD')
+def US_COVID_DASHBOARD():
 
 	# Google BigQuery Query
 	query = """
@@ -85,9 +85,9 @@ def cloudGraph():
 	
 	# Add range slider
 	fig.update_layout(
-
+		title='Total Cases Over Time',
 		# Add data source citation at bottom right of graph
-	annotations = [dict(text='Source: bigquery-public-data.covid19_usafacts.confirmed_cases',
+	annotations = [dict(text='',
 		showarrow=False,
 		xref='paper',
 		yref='paper',
@@ -148,7 +148,7 @@ def cloudGraph():
 	))
 	mapFig.update_layout(
 		title={
-		'text':'Total Positive COVID cases per state as of {}'.format(lastUpdated),
+		'text':'Total Cases Per State',
 		# 'pad': dict(t=-300,b=-200),
 		# 'yanchor':'top',
 		},
@@ -159,8 +159,64 @@ def cloudGraph():
 		)
 	mapDiv = plot(mapFig, include_plotlyjs=False, output_type='div')
 
+
+	# NEW CASES PER DAY GRAPH-------------------***----------------***-------------------***---------
+
+	# Sum all cases for each day then transpose so days are rows
+	cases_total_per_day = casesdf.groupby([True]*len(casesdf)).agg('sum').T
+	
+	# Calculate the volume difference from previous row (new cases each day) for entire country
+	new_cases_per_day = cases_total_per_day.diff()
+	new_cases_per_day['Date'] = pd.to_datetime(new_cases_per_day.index.str.replace('_','/'))
+
+	# Build the line graph and show it
+	xAxis=new_cases_per_day['Date'] # set x axis to dates (row indexes)
+	yAxis=new_cases_per_day[True]   # set y axis to values in King County
+	new_case_fig=go.Figure(data=go.Scatter(x=xAxis, y=yAxis))
+
+	#Add titles and legends
+	new_case_fig.update_layout(
+                 title="New Cases Per Day")
+
+	new_case_graph_div = plot(new_case_fig, include_plotlyjs=False, output_type='div')
+
+	# New Cases By Day STATE MAP-------------------------------***-------------------------
+	# Sum all cases for each day then transpose so days are rows
+	state_per_day = casesdf.groupby(['state']).agg('sum').T
+
+	state_per_day = state_per_day.diff()
+	state_per_day['Date'] = pd.to_datetime(state_per_day.index.str.replace('_','/'))
+
+	# Select select the last row and chop off the date, this is the most recent daily new case count for each state
+	state_recent_new_count = state_per_day.iloc[-1][:-1]
+
+	# Create chloropleth graph map of states with last date collected as the color
+	map_new_fig = go.Figure(data=go.Choropleth(
+    	locations=state_recent_new_count.index, # Spatial coordinates
+    	z = state_recent_new_count, # Data to be color-coded
+    	locationmode = 'USA-states', # set of locations match entries in `locations`
+    	colorscale = 'Reds',
+    	colorbar_title = "New Cases",
+	))
+
+	map_new_fig.update_layout(
+    	title_text = 'New Cases Per Day',
+    	geo_scope='usa', # limit map scope to USA
+	)
+
+	map_new_div=plot(map_new_fig, include_plotlyjs=False, output_type='div')
+
+	# END OF CLOUD GRAPH - RENDER THE TEMPlATE WITH THE GRAPHS!!!!---------***---------------***--------
+
 	print('this shows up in the terminal where the server is started!!')
-	return render_template('/graph.html', pltDiv=line_graph_div, mapDiv=mapDiv)    # render /graph.html with graph as plt_div
+
+	# Page title that renders on the dashboard
+	page_title = "<h2> US Covid Dashboard </h2> <p> last recorded date: {}</p>".format(lastUpdated)
+	return render_template('/graph.html',newCaseDiv=new_case_graph_div, 
+		newCaseMapDiv=map_new_div , pltDiv=line_graph_div, mapDiv=mapDiv,
+		pageTitle = page_title)    # render /graph.html with graph as plt_div
+
+# ----------------------END CLOUD GRAPH------------***------------------------------***-----------
 
 # ---------------------- TESTING ----------------------------------------------------------------
 # ---------------------- TESTING ----------------------------------------------------------------

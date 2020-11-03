@@ -18,13 +18,15 @@
      <ul class="link list">
 
       <div class="linkBox">
-       <li class="project link"><a href="{{url_for('cloudGraph')}}"><img src = "{{url_for('static',filename='/images/US_map.png')}}"></a></li>
+       <li class="project link"><a href="{{url_for('US_COVID_DASHBOARD')}}"><img src = "{{url_for('static',filename='/images/US_map.png')}}"></a></li>
        <div id="desc">
-          <a href="{{url_for('cloudGraph')}}"><h3> US Covid Dashboard </h3> </a>
+          <a href="{{url_for('US_COVID_DASHBOARD')}}"><h3> US Covid Dashboard </h3> </a>
           </br>
           <p> Interactive and real-time visualizations of nationwide COVID case counts.
           </br>
           Data sourced from google bigquery and visualized with the plotly python library.
+        </br>
+          Load time is not the best, please be patient with this one.
           </p>
         </div>
        </div>

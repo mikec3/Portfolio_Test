@@ -7,6 +7,7 @@ flask installed via venv "pip install flask"
 pandas installed via venv
 plotly installed via venv
 pip install google-cloud-bigquery via venv
+pip install GraphLab-Create
 
 
 TO START
@@ -33,3 +34,4 @@ PAGES
 -add google cloud bigquery key.json file to folder before /mysite/ titled michaelcouch
 -open BASH console and $ pip install plotly==4.8.1 --user
 	-pip install google-cloud-bigquery --user
+	-pip install GraphLab-Create --user  // THIS ERRORED OUT ON pythonanywhere due to disc space

@@ -2,15 +2,26 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/graphStyle.css') }}">
    <body>
-    <h1> US COVID Dashboard </h1>
-   <div id="dashboard">
-    <div class="graphs">
+        {{pageTitle|safe}}
+
+      <div id="dashboard">
+        <div class="graphs">
+            {{newCaseDiv|safe}}
+        </div>
+         <div class="graphs">
+            {{newCaseMapDiv|safe}}
+        </div>
+      </div>
+
+      <div id="dashboard">
+        <div class="graphs">
     {{mapDiv|safe}}
-  </div>
+    </div>
   <div class="graphs">
 	  {{pltDiv|safe}}
   </div>
+</div>
 
-  </div>
+  <p>Source: bigquery-public-data.covid19_usafacts.confirmed_cases</p>
    </body>
 </html>
