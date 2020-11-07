@@ -5,7 +5,7 @@ import pandas as pd
 from random import random
 import plotly.graph_objects as go
 from plotly.offline import plot
-import graphlab
+#import graphlab
 from datetime import date, timedelta
 
 
@@ -60,6 +60,11 @@ def graph():
 @app.route('/US_COVID_DASHBOARD')
 def US_COVID_DASHBOARD():
 
+	# TESTING--------***-------------------***-------------------***------------
+
+	# END TESTING-------***-------------------***-------------------***------------
+
+	#
 	# Google BigQuery Query
 	query = """
 		SELECT * FROM bigquery-public-data.covid19_usafacts.confirmed_cases
@@ -135,30 +140,69 @@ def US_COVID_DASHBOARD():
 	#Rename total column
 	statesDf.columns = ['Total']
 
-	#Get the date of the last record and convert to date appearance
+	# Making the cases/population map--------------------------***----------------------------
+
+	# Query my bigquery project for the state population dataset so that we can divide cases by population
+	query="""select * FROM dev-smoke-278920.COVID_TEST_DATASET.2019_State_Census_Population
+    """
+	query_job = client.query(query)
+	popdf=query_job.to_dataframe()
+	popdf.head()
+
+	# Create an Initial column 'AK, AL, etc...' from the index
+	statesDf['Initial']=statesDf.index
+
+	# Join the statesdf and popdf on the state initials
+	states_with_pop = pd.merge(statesDf, popdf)
+
+	# Create a the cases/population % column
+	states_with_pop['case_to_pop_percent'] = states_with_pop['Total']/states_with_pop['Population']*100
+
+	# Create chloropleth graph map of states with last date collected as the color
+	cases_per_pop_fig = go.Figure(data=go.Choropleth(
+    	locations=states_with_pop['Initial'], # Spatial coordinates
+    	z = states_with_pop['case_to_pop_percent'], # Data to be color-coded
+    	locationmode = 'USA-states', # set of locations match entries in `locations`
+    	colorscale = 'Reds',
+    	colorbar_title = "% of Population",
+	))
+
+	cases_per_pop_fig.update_layout(
+    	title_text = 'Cases as a % of State Population (US Census 2019)',
+    	geo_scope='usa', # limit map scope to USA
+	)
+
+	cases_per_pop_map_div = plot(cases_per_pop_fig, include_plotlyjs=False, output_type='div')
+
+	# END Making the cases/population map--------------------------***-----------------------------
+
+	# Get the date of the last record and convert to date appearance
 	lastUpdated = list(casesdf.columns)[-1][1:].replace('_','/')
 
-	mapFig = go.Figure(data=go.Choropleth(
-		locations=statesDf.index,
-		z=statesDf['Total'],
-		locationmode='USA-states',
-		colorscale='Reds',
-		colorbar_title='Positive Cases',
-		# text="yooo",    # Hover Text
-	))
-	mapFig.update_layout(
-		title={
-		'text':'Total Cases Per State',
-		# 'pad': dict(t=-300,b=-200),
-		# 'yanchor':'top',
-		},
-		# margin= dict(t=200,r=200),
-		# title_text = 'Total Positive COVID cases per state as of {}'.format(lastUpdated),
-		geo_scope='usa',
+	# TOTAL CASES PER STATE MAP---------------***---------------***------------------***---------
 
-		)
-	mapDiv = plot(mapFig, include_plotlyjs=False, output_type='div')
+	# mapFig = go.Figure(data=go.Choropleth(
+	# 	locations=statesDf.index,
+	# 	z=statesDf['Total'],
+	# 	locationmode='USA-states',
+	# 	colorscale='Reds',
+	# 	colorbar_title='Positive Cases',
+	# 	# text="yooo",    # Hover Text
+	# ))
+	# mapFig.update_layout(
+	# 	title={
+	# 	'text':'Total Cases Per State',
+	# 	# 'pad': dict(t=-300,b=-200),
+	# 	# 'yanchor':'top',
+	# 	},
+	# 	# margin= dict(t=200,r=200),
+	# 	# title_text = 'Total Positive COVID cases per state as of {}'.format(lastUpdated),
+	# 	geo_scope='usa',
 
+	# 	)
+	# mapDiv = plot(mapFig, include_plotlyjs=False, output_type='div')
+
+	# END TOTAL CASES PER STATE MAP---------------***---------------***------------------***---------
 
 	# NEW CASES PER DAY GRAPH-------------------***----------------***-------------------***---------
 
@@ -213,7 +257,7 @@ def US_COVID_DASHBOARD():
 	# Page title that renders on the dashboard
 	page_title = "<h2> US Covid Dashboard </h2> <p> last recorded date: {}</p>".format(lastUpdated)
 	return render_template('/graph.html',newCaseDiv=new_case_graph_div, 
-		newCaseMapDiv=map_new_div , pltDiv=line_graph_div, mapDiv=mapDiv,
+		newCaseMapDiv=map_new_div , pltDiv=line_graph_div, mapDiv=cases_per_pop_map_div,
 		pageTitle = page_title)    # render /graph.html with graph as plt_div
 
 # ----------------------END CLOUD GRAPH------------***------------------------------***-----------
